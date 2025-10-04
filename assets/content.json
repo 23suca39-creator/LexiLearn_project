@@ -1,0 +1,38 @@
+[
+  {
+    "id": "storyweaver1",
+    "title": "The Little Elephant",
+    "description": "A beginner-friendly story about a curious elephant.",
+    "type": "Stories",
+    "thumbnailUrl": "https://storyweaver.org.in/images/elephant.jpg",
+    "level": "Beginner",
+    "text": "Once upon a time, a little elephant..."
+  },
+  {
+    "id": "gutenberg1",
+    "title": "Pride and Prejudice - Passage",
+    "description": "Excerpt from classic novel Pride and Prejudice.",
+    "type": "Articles",
+    "thumbnailUrl": "https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg",
+    "level": "Advanced",
+    "text": "It is a truth universally acknowledged..."
+  },
+  {
+    "id": "commonlit1",
+    "title": "Science Text - Water Cycle",
+    "description": "A reading passage explaining the water cycle.",
+    "type": "Basic Reading Passages",
+    "thumbnailUrl": "",
+    "level": "Intermediate",
+    "text": "The water cycle describes how water moves through the environment..."
+  },
+  {
+    "id": "readworks1",
+    "title": "Comprehension Exercise - Animals",
+    "description": "Reading comprehension exercise on animals.",
+    "type": "Exercises",
+    "thumbnailUrl": "",
+    "level": "Beginner",
+    "text": "Read the passage and answer the questions below..."
+  }
+]
