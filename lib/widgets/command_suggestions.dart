@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CommandSuggestions extends StatelessWidget {
   final List<String> commands;
-  const CommandSuggestions({required this.commands, Key? key}) : super(key: key);
+  const CommandSuggestions({required this.commands, super.key});
 
   @override
   Widget build(BuildContext context) {

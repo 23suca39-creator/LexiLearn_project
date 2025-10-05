@@ -7,7 +7,7 @@ import '../providers/progress_provider.dart';
 class ContentDetailScreen extends StatefulWidget {
   final ContentItem item;
 
-  const ContentDetailScreen({Key? key, required this.item}) : super(key: key);
+  const ContentDetailScreen({super.key, required this.item});
 
   @override
   State<ContentDetailScreen> createState() => _ContentDetailScreenState();
@@ -31,15 +31,10 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
       if (progress > 1) progress = 1;
       if (progress < 0) progress = 0;
 
-      Provider.of<ProgressProvider>(context, listen: false)
-          .addProgress(ProgressEntry(
-            contentId: widget.item.id,
-            progress: progress,
-            accuracy: 100.0, // Supply real value if available
-            score: 0.0, // Supply real value if you track quiz scores
-            date: DateTime.now(),
-));
-
+      // Save progress when user reaches end (100%)
+      if (progress >= 0.9) {
+        _markContentAsRead(100.0);
+      }
     });
 
     _flutterTts.setCompletionHandler(() {
@@ -60,6 +55,19 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
     _scrollController.dispose();
     _flutterTts.stop();
     super.dispose();
+  }
+
+  void _markContentAsRead(double progressPercent) {
+    final provider = Provider.of<ProgressProvider>(context, listen: false);
+    
+    final progressItem = ProgressItem(
+      id: widget.item.id,
+      level: widget.item.category,  // "Beginner", "Intermediate", "Advanced"
+      accuracy: progressPercent,    // e.g., 100.0 for complete
+      date: DateTime.now(),
+    );
+    
+    provider.addProgress(progressItem);
   }
 
   Future<void> _toggleReadAloud() async {

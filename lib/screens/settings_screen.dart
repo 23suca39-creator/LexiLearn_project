@@ -4,7 +4,10 @@ import '../providers/settings_provider.dart';
 import 'package:lexilearn/themes/themes.dart';
 
 class SettingsScreen extends StatelessWidget {
-  final Map<String, ThemeData> themeOptions = {
+  const SettingsScreen({super.key});
+
+  // FIXED: Changed from final field to static getter
+  static Map<String, ThemeData> get themeOptions => {
     'Soft Blue 🌊': DyslexiaThemes.softBlue,
     'Peach Coral 🍑': DyslexiaThemes.peachCoral,
     'Lavender Calm 🌸': DyslexiaThemes.lavenderCalm,

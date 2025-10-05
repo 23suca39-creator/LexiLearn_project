@@ -6,7 +6,25 @@ import 'package:lexilearn/themes/themes.dart';
 import '../providers/progress_provider.dart';
 
 class ProgressTrackerScreen extends StatelessWidget {
-  const ProgressTrackerScreen({Key? key}) : super(key: key);
+  const ProgressTrackerScreen({super.key});
+
+  // Simple AI-Coach-like dynamic next-level recommend: no ML, just rules.
+  String _getNextLevelSuggestion(ProgressProvider provider) {
+    // Baby-like if-else rules:
+    double beginnerAvg = provider.getLevelAverage('Beginner');
+    double intermediateAvg = provider.getLevelAverage('Intermediate');
+    double advancedAvg = provider.getLevelAverage('Advanced');
+
+    if (beginnerAvg >= 70 && intermediateAvg < 70) {
+      return "Great job! Let's try Intermediate stories now.";
+    } else if (intermediateAvg >= 70 && advancedAvg < 70) {
+      return "Wow! You are ready for Advanced stories. Give them a try!";
+    } else if (advancedAvg >= 70) {
+      return "You finished every level—You are a MASTER reader!";
+    } else {
+      return "Keep going with Beginner stories for best results!";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +38,9 @@ class ProgressTrackerScreen extends StatelessWidget {
             body: const Center(child: Text('No progress data available')),
           );
         }
+
+        // New: show baby-steps AI coach suggestion at top
+        final String nextLevel = _getNextLevelSuggestion(provider);
 
         return Scaffold(
           appBar: AppBar(
@@ -35,6 +56,25 @@ class ProgressTrackerScreen extends StatelessWidget {
           ),
           body: Column(
             children: [
+              // AI coach-like dynamic suggestion (visible always)
+              Padding(
+                padding: const EdgeInsets.only(top: 18.0, left: 12, right: 12, bottom: 8),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    nextLevel,
+                    style: TextStyle(
+                      fontSize: 17, fontWeight: FontWeight.w600, color: Colors.blueGrey[900]
+                    ),
+                  ),
+                ),
+              ),
+              // Score summary (average, best, total)
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: Row(
@@ -46,6 +86,7 @@ class ProgressTrackerScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              // Line chart of progress
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8),

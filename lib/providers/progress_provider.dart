@@ -1,50 +1,55 @@
 import 'package:flutter/material.dart';
 
-class ProgressEntry {
-  final String contentId;
-  final double progress;
-  final double accuracy;
-  final double score;
+class ProgressItem {
+  final String id;          // Unique story/quiz/content id
+  final String level;       // "Beginner", "Intermediate", "Advanced", etc.
+  final double accuracy;    // 0.0 - 100.0
   final DateTime date;
 
-  ProgressEntry({
-    required this.contentId,
-    required this.progress,
+  ProgressItem({
+    required this.id,
+    required this.level,
     required this.accuracy,
-    required this.score,
     required this.date,
   });
 }
 
 class ProgressProvider extends ChangeNotifier {
-  final List<ProgressEntry> _history = [];
-  final Map<String, double> _progressMap = {};
+  final List<ProgressItem> _progressList = [];
 
-  List<ProgressEntry> get progressList => List.unmodifiable(_history);
+  List<ProgressItem> get progressList => _progressList;
 
-  double get averageAccuracy {
-    if (_history.isEmpty) return 0;
-    return _history.map((e) => e.accuracy).reduce((a, b) => a + b) / _history.length;
-  }
-
-  double get bestScore {
-    if (_history.isEmpty) return 0;
-    return _history.map((e) => e.score).reduce((a, b) => a > b ? a : b);
-  }
-
-  int get quizCount => _history.length;
-
-  double getProgress(String contentId) => _progressMap[contentId] ?? 0;
-
-  void addProgress(ProgressEntry entry) {
-    _history.add(entry);
-    _progressMap[entry.contentId] = entry.progress;
+  void addProgress(ProgressItem item) {
+    _progressList.add(item);
     notifyListeners();
   }
 
+  double get averageAccuracy {
+    if (_progressList.isEmpty) return 0.0;
+    return _progressList.map((x) => x.accuracy).reduce((a, b) => a + b) / _progressList.length;
+  }
+
+  double get bestScore {
+    if (_progressList.isEmpty) return 0.0;
+    return _progressList.map((x) => x.accuracy).reduce((a, b) => a > b ? a : b);
+  }
+
+  int get quizCount => _progressList.length;
+
+  double getLevelAverage(String level) {
+    final levelItems = _progressList.where((x) => x.level == level).toList();
+    if (levelItems.isEmpty) return 0.0;
+    return levelItems.map((x) => x.accuracy).reduce((a, b) => a + b) / levelItems.length;
+  }
+
+  double getProgress(String id) {
+    final items = _progressList.where((x) => x.id == id);
+    if (items.isEmpty) return 0.0;
+    return items.last.accuracy / 100;
+  }
+
   void resetProgress() {
-    _history.clear();
-    _progressMap.clear();
+    _progressList.clear();
     notifyListeners();
   }
 }

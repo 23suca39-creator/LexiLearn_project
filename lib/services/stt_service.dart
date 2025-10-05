@@ -21,7 +21,7 @@ class SpeechToTextService {
       if (results != null && results.length > index) {
         final transcriptResult = results[index];
         final transcriptAlternative = transcriptResult.item(0);
-        final transcript = transcriptAlternative?.transcript ?? '';
+        final transcript = transcriptAlternative.transcript ?? '';
         _onResult?.call(transcript);
       }
     });

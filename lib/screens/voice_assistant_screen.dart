@@ -4,7 +4,7 @@ import '../widgets/command_suggestions.dart';
 import 'package:lexilearn/themes/themes.dart';
 
 class VoiceAssistantScreen extends StatefulWidget {
-  const VoiceAssistantScreen({Key? key}) : super(key: key);
+  const VoiceAssistantScreen({super.key});
 
   @override
   State<VoiceAssistantScreen> createState() => _VoiceAssistantScreenState();
@@ -33,7 +33,7 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
       if (results != null && index < results.length) {
         final result = results[index];
         final alt = result.item(0);
-        final transcript = alt?.transcript ?? "";
+        final transcript = alt.transcript ?? "";
         final isFinal = result.isFinal;
 
         print('Recognized: $transcript, isFinal=$isFinal');

@@ -38,12 +38,12 @@ class HomeScreen extends StatelessWidget {
           style: textTheme.titleLarge?.copyWith(
             fontFamily: 'OpenDyslexic',
             fontWeight: FontWeight.bold,
-            color: colorScheme.onBackground,
+            color: colorScheme.onSurface,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout, color: colorScheme.onBackground),
+            icon: Icon(Icons.logout, color: colorScheme.onSurface),
             tooltip: 'Logout',
             onPressed: () {
               Navigator.pushReplacementNamed(context, '/');
@@ -62,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                 style: textTheme.titleLarge?.copyWith(
                   fontFamily: 'OpenDyslexic',
                   fontWeight: FontWeight.w600,
-                  color: colorScheme.onBackground,
+                  color: colorScheme.onSurface,
                   height: 1.5,
                 ),
               ),
@@ -73,7 +73,7 @@ class HomeScreen extends StatelessWidget {
                 'Happy Learning!',
                 style: textTheme.bodyMedium?.copyWith(
                   fontFamily: 'OpenDyslexic',
-                  color: colorScheme.onBackground,
+                  color: colorScheme.onSurface,
                   height: 1.5,
                 ),
               ),
@@ -161,7 +161,7 @@ class HomeScreen extends StatelessWidget {
                   '© 2025 LexiLearn',
                   style: textTheme.bodySmall?.copyWith(
                     fontFamily: 'OpenDyslexic',
-                    color: colorScheme.onBackground,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),

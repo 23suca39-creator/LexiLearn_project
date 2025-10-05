@@ -8,7 +8,7 @@ import '../providers/progress_provider.dart';
 class ContentReaderScreen extends StatefulWidget {
   final ContentItem contentItem;
 
-  ContentReaderScreen({Key? key, required this.contentItem}) : super(key: key);
+  const ContentReaderScreen({super.key, required this.contentItem});
 
   @override
   State<ContentReaderScreen> createState() => _ContentReaderScreenState();
@@ -97,7 +97,7 @@ class _ContentReaderScreenState extends State<ContentReaderScreen> {
             color: theme.colorScheme.primary,
           ),
         ),
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: theme.colorScheme.surface,
         iconTheme: IconThemeData(color: theme.colorScheme.primary),
         actions: [
           IconButton(onPressed: _speak, icon: Icon(Icons.volume_up)),

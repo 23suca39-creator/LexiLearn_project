@@ -3,7 +3,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:lexilearn/themes/themes.dart';
 
 class SpeechInteractionScreen extends StatefulWidget {
-  const SpeechInteractionScreen({Key? key}) : super(key: key);
+  const SpeechInteractionScreen({super.key});
 
   @override
   State<SpeechInteractionScreen> createState() => _SpeechInteractionScreenState();

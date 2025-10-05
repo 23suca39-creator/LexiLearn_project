@@ -3,7 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class ContentWebViewScreen extends StatefulWidget {
   final String url;
-  const ContentWebViewScreen({Key? key, required this.url}) : super(key: key);
+  const ContentWebViewScreen({super.key, required this.url});
 
   @override
   State<ContentWebViewScreen> createState() => _ContentWebViewScreenState();

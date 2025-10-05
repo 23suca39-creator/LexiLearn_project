@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 import '../models/content_item.dart';
 
+
+
 class ContentRepository {
   static const String contentBoxName = 'contentBox';
 
@@ -16,13 +18,15 @@ class ContentRepository {
   }
 
   // Save content to local cache
-  Future<void> cacheContent(List<ContentItem> contents) async {
-    var box = await Hive.openBox<ContentItem>(contentBoxName);
-    await box.clear();
-    for (var content in contents) {
-      await box.put(content.id, content);
-    }
-  }
+ Future<void> saveLocalFilePath(String path) async {
+  var box = await Hive.openBox('localFiles');
+  await box.add(path);
+}
+Future<List<String>> loadLocalFiles() async {
+  var box = await Hive.openBox('localFiles');
+  return List<String>.from(box.values);
+}
+
 
   // Fetch Storyweaver content
   Future<List<ContentItem>> fetchStoryweaverBooks() async {
@@ -89,3 +93,14 @@ class ContentRepository {
     return allContents;
   }
 }
+
+
+
+
+
+
+
+
+
+
+

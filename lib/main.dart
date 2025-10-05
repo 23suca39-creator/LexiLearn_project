@@ -6,6 +6,7 @@ import 'models/content_item.dart';
 import 'providers/progress_provider.dart';
 import 'providers/settings_provider.dart';
 
+
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/content_library_screen.dart';
@@ -32,7 +33,7 @@ void main() async {
 }
 
 class LexiApp extends StatelessWidget {
-  const LexiApp({Key? key}) : super(key: key);
+  const LexiApp({super.key});
 
   @override
   Widget build(BuildContext context) {

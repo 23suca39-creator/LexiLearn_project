@@ -3,7 +3,7 @@ import '../services/web_scraper.dart';
 
 class ArticleScreen extends StatefulWidget {
   final String url;
-  const ArticleScreen({Key? key, required this.url}) : super(key: key);
+  const ArticleScreen({super.key, required this.url});
 
   @override
   _ArticleScreenState createState() => _ArticleScreenState();

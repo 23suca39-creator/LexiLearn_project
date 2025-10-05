@@ -48,7 +48,7 @@ class DyslexiaThemes {
   static final ThemeData oceanBreeze = _buildTheme(
     backgroundColor: Color(0xFFE1F5FE),
     textColor: Color(0xFF004D40),
-    accentColor: Color(0xFF4DD1E),
+    accentColor: Color(0x0ff4dd1e),
   );
 
   static final ThemeData mintCream = _buildTheme(
@@ -78,7 +78,7 @@ class DyslexiaThemes {
   static final ThemeData softAqua = _buildTheme(
     backgroundColor: Color(0xFFE0F7FA),
     textColor: Color(0xFF004D40),
-    accentColor: Color(0xFF4DD1E),
+    accentColor: Color(0x0ff4dd1e),
   );
 
   static final ThemeData rosewood = _buildTheme(
@@ -98,8 +98,6 @@ class DyslexiaThemes {
       colorScheme: ColorScheme.light(
         primary: accentColor,
         onPrimary: Colors.white,
-        background: backgroundColor,
-        onBackground: textColor,
         surface: Colors.white,
         onSurface: textColor,
       ),
