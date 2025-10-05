@@ -12,9 +12,9 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   int getColumnCount(double width) {
-    if (width >= 1024) return 3; // Desktop: 3 columns
-    if (width >= 600) return 2;  // Tablet: 2 columns
-    return 1;                    // Mobile: 1 column stacked
+    if (width >= 1024) return 3;
+    if (width >= 600) return 2;
+    return 1;
   }
 
   @override
@@ -22,11 +22,10 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-
     final mediaQuery = MediaQuery.of(context);
     final width = mediaQuery.size.width;
 
-    const userName = 'User'; // TODO: replace with dynamic user name
+    const userName = 'User';
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -93,62 +92,53 @@ class HomeScreen extends StatelessWidget {
                       icon: Icons.library_books,
                       title: 'Library',
                       color: colorScheme.primary,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => ContentLibraryScreen()),
-                        );
-                      },
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => ContentLibraryScreen()),
+                      ),
                     ),
                     _buildFeatureCard(
                       context,
                       icon: Icons.bar_chart,
                       title: 'Progress Tracker',
                       color: colorScheme.secondary,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ProgressTrackerScreen()),
-                        );
-                      },
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => ProgressTrackerScreen()),
+                      ),
                     ),
                     _buildFeatureCard(
                       context,
                       icon: Icons.mic,
                       title: 'Speech Interaction',
                       color: colorScheme.primaryContainer,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => SpeechInteractionScreen()),
-                        );
-                      },
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => SpeechInteractionScreen()),
+                      ),
                     ),
                     _buildFeatureCard(
                       context,
                       icon: Icons.quiz,
                       title: 'Quiz',
                       color: colorScheme.secondaryContainer,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => QuizScreen()),
-                        );
-                      },
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => QuizScreen()),
+                      ),
                     ),
                     _buildFeatureCard(
                       context,
                       icon: Icons.settings,
                       title: 'Settings',
                       color: colorScheme.primary,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => SettingsScreen()),
-                        );
-                      },
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => SettingsScreen()),
+                      ),
                     ),
                   ],
                 ),
@@ -172,11 +162,13 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureCard(BuildContext context,
-      {required IconData icon,
-      required String title,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _buildFeatureCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       borderRadius: BorderRadius.circular(20),
       onTap: onTap,
@@ -203,10 +195,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 14),
               Text(
                 title,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontFamily: 'OpenDyslexic',
                       fontWeight: FontWeight.w600,
                     ),

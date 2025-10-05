@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
+import '../providers/settings_provider.dart';
 import '../models/content_item.dart';
 import '../providers/progress_provider.dart';
 
@@ -71,22 +72,42 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
   }
 
   Future<void> _toggleReadAloud() async {
-    if (_isReadingAloud) {
-      await _flutterTts.stop();
+  final settings = Provider.of<SettingsProvider>(context, listen: false);
+
+  if (_isReadingAloud) {
+    await _flutterTts.stop();
+    setState(() {
+      _isReadingAloud = false;
+    });
+  } else {
+    await _flutterTts.setLanguage("en-US");
+
+    if (settings.selectedVoiceName != null && settings.selectedVoiceLocale != null) {
+      await _flutterTts.setVoice({
+        "name": settings.selectedVoiceName ?? "defaultVoiceName",
+        "locale": settings.selectedVoiceLocale ?? "en-US",
+      });
+    }
+
+    await _flutterTts.setSpeechRate(settings.speechRate);
+    await _flutterTts.setVolume(1.0);  // you can also make volume customizable
+    await _flutterTts.setPitch(settings.voicePitch);
+
+    setState(() {
+      _isReadingAloud = true;
+    });
+
+    await _flutterTts.speak(widget.item.fullText);
+
+    // Optionally listen to completion event and reset _isReadingAloud after speech ends
+    _flutterTts.setCompletionHandler(() {
       setState(() {
         _isReadingAloud = false;
       });
-    } else {
-      await _flutterTts.setLanguage("en-US");
-      await _flutterTts.setSpeechRate(0.45);
-      await _flutterTts.setVolume(1.0);
-      await _flutterTts.setPitch(1.0);
-      await _flutterTts.speak(widget.item.fullText);
-      setState(() {
-        _isReadingAloud = true;
-      });
-    }
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

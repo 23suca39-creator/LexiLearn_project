@@ -13,13 +13,15 @@ import '../widgets/coach_read_screen.dart';
 import '../widgets/ar_reading_screen.dart';
 
 // Import your ContentItem model and detail screen
+
 import '../models/content_item.dart';
 import '../providers/progress_provider.dart';
+import '../providers/settings_provider.dart';
 import '../screens/content_detail_screen.dart';
+import '../repositories/content_repository.dart';
 
 // Sample content - replace with actual content source
 final List<ContentItem> allContent = [
-  // BEGINNER CONTENT
   ContentItem(
     id: 'b1',
     title: 'Reading Passage 1',
@@ -52,7 +54,6 @@ final List<ContentItem> allContent = [
     fullText: 'Maya lost her red ball. She looked under the bed. She found it in her school bag. She was happy and played outside.',
     url: '',
   ),
-  // INTERMEDIATE CONTENT
   ContentItem(
     id: 'i1',
     title: 'Animals of India',
@@ -69,7 +70,6 @@ final List<ContentItem> allContent = [
     fullText: 'Evaporation is when the sun heats up water to make it vapor. True or False: Clouds are made from water vapor.',
     url: '',
   ),
-  // ADVANCED CONTENT
   ContentItem(
     id: 'a1',
     title: 'Excerpt: Pride and Prejudice',
@@ -86,6 +86,7 @@ final List<ContentItem> allContent = [
     fullText: 'The water cycle, also known as the hydrologic cycle, explains how water moves from the surface to the atmosphere and back...',
     url: '',
   ),
+
 ];
 
 class ContentLibraryScreen extends StatefulWidget {
@@ -96,14 +97,21 @@ class ContentLibraryScreen extends StatefulWidget {
 }
 
 class _ContentLibraryScreenState extends State<ContentLibraryScreen> {
+
+
+  final Map<String, int> _shownCount = {'Beginner': 3, 'Intermediate': 3, 'Advanced': 3};
+
+
   final Map<String, int> _shownCount = {
     'Beginner': 3,
     'Intermediate': 3,
     'Advanced': 3,
   };
+
   static const int _increment = 3;
   late ThemeData theme;
   final String fontFamily = 'OpenDyslexic';
+
   final FlutterTts flutterTts = FlutterTts();
   
   List<String> _localFiles = [];
@@ -619,6 +627,50 @@ class _ContentLibraryScreenState extends State<ContentLibraryScreen> {
     );
   }
 
+  final ContentRepository contentRepository = ContentRepository();
+
+  List<ContentItem> _dynamicContent = [];
+  bool _loadingDynamicContent = true;
+  bool _loadingError = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    theme = Theme.of(context);
+    _loadDynamicContent();
+  }
+
+  Future<void> _loadDynamicContent() async {
+    try {
+      final List<ContentItem> fetchedContent =
+          await contentRepository.fetchAndCacheAllContent();
+      setState(() {
+        _dynamicContent = fetchedContent;
+        _loadingDynamicContent = false;
+        _loadingError = false;
+      });
+    } catch (e) {
+      setState(() {
+        _loadingDynamicContent = false;
+        _loadingError = true;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  List<ContentItem> _itemsForLevel(String level) {
+    return [
+      ...allContent.where((item) => item.category == level),
+      ..._dynamicContent.where((item) => item.category == level),
+    ];
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final progressProvider = Provider.of<ProgressProvider>(context);
@@ -668,6 +720,7 @@ class _ContentLibraryScreenState extends State<ContentLibraryScreen> {
           ),
         ],
       ),
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -783,6 +836,232 @@ class _ContentLibraryScreenState extends State<ContentLibraryScreen> {
               _buildLevelSection('Advanced', progressProvider),
               const SizedBox(height: 32),
             ],
+      body: _loadingDynamicContent
+          ? const Center(child: CircularProgressIndicator())
+          : _loadingError
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Failed to load dynamic content.',
+                        style: TextStyle(
+                          color: theme.colorScheme.error,
+                          fontSize: 16,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _loadingDynamicContent = true;
+                            _loadingError = false;
+                          });
+                          _loadDynamicContent();
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildLevelSection('Beginner', progressProvider),
+                        const SizedBox(height: 20),
+                        _buildLevelSection('Intermediate', progressProvider),
+                        const SizedBox(height: 20),
+                        _buildLevelSection('Advanced', progressProvider),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
+                  ),
+                ),
+    );
+  }
+
+
+  Widget _buildLevelSection(String level, ProgressProvider progressProvider) {
+    final items = _itemsForLevel(level);
+    final shownItems = items.take(_shownCount[level]!).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$level Level',
+          style: TextStyle(
+            fontFamily: fontFamily,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 350),
+          child: _buildCardRow(shownItems, progressProvider,
+              key: ValueKey(_shownCount[level]!)),
+        ),
+        if (shownItems.length < items.length)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Center(
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: theme.colorScheme.secondary,
+                  side: BorderSide(color: theme.colorScheme.primary, width: 2),
+                  textStyle: TextStyle(
+                    fontSize: 15,
+                    fontFamily: fontFamily,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                ),
+                icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                label: const Text('Show More'),
+                onPressed: () {
+                  setState(() {
+                    _shownCount[level] =
+                        (_shownCount[level]! + _increment).clamp(0, items.length);
+                  });
+                },
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCardRow(
+      List<ContentItem> items, ProgressProvider progressProvider,
+      {Key? key}) {
+    return SizedBox(
+      key: key,
+      height: 192,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        itemBuilder: (context, idx) =>
+            _buildContentCard(items[idx], progressProvider),
+      ),
+    );
+  }
+
+  Widget _buildContentCard(ContentItem item, ProgressProvider progressProvider) {
+    final progress = progressProvider.getProgress(item.id);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ContentDetailScreen(item: item),
+          ),
+        );
+      },
+      child: TweenAnimationBuilder(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+        tween: Tween(begin: 1.0, end: 1.0),
+        builder: (_, scale, child) => MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            transform: Matrix4.identity()..scale(scale),
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 7,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: child,
+          ),
+        ),
+        child: Ink(
+          child: Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: SizedBox(
+              width: 240,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: TextStyle(
+                      fontFamily: fontFamily,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: Text(
+                      item.preview,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: fontFamily,
+                        fontSize: 15,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 7,
+                    color: theme.colorScheme.secondary,
+                    backgroundColor: theme.dividerColor,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${(progress * 100).toStringAsFixed(0)}% completed',
+                    style: TextStyle(
+                      fontFamily: fontFamily,
+                      fontSize: 12,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Consumer<SettingsProvider>(
+                      builder: (context, settings, child) {
+                        return IconButton(
+                          icon: const Icon(Icons.volume_up),
+                          color: theme.colorScheme.primary,
+                          tooltip: 'Read Aloud',
+                          onPressed: () async {
+                            await flutterTts.stop();
+                            await flutterTts.setLanguage('en-US');
+                            final settings = Provider.of<SettingsProvider>(context, listen: false);
+                            if (settings.selectedVoiceName != null && settings.selectedVoiceLocale != null) {
+                              await flutterTts.setVoice({
+                                "name": settings.selectedVoiceName!,
+                                "locale": settings.selectedVoiceLocale!
+                              });
+                            }
+                            await flutterTts.setPitch(settings.voicePitch);
+                            await flutterTts.setSpeechRate(settings.speechRate);
+                            await flutterTts.speak(item.fullText);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

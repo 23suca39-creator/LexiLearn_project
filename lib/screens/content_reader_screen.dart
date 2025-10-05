@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
-
+import '../providers/settings_provider.dart';
 import '../models/content_item.dart';
 import '../providers/progress_provider.dart';
 
@@ -53,24 +53,34 @@ class _ContentReaderScreenState extends State<ContentReaderScreen> {
         _progress = newProgress;
       });
 
-      // Record progress with required named parameters
       context.read<ProgressProvider>().addProgress(
         ProgressEntry(
-            contentId: widget.contentItem.id,
-            progress: newProgress,
-            accuracy: 100.0, // Replace with actual accuracy calculation if available
-            score: 0.0,      // Replace with actual score if any, else set to 0
-            date: DateTime.now(),
-            url: widget.contentItem.url, // Pass the url here
+          contentId: widget.contentItem.id,
+          progress: newProgress,
+          accuracy: 100.0,
+          score: 0.0,
+          date: DateTime.now(),
+          url: widget.contentItem.url,
         ),
-    );
-
+      );
     }
   }
 
   Future<void> _speak() async {
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+
     await flutterTts.setLanguage('en-US');
-    await flutterTts.setSpeechRate(0.45);
+
+    if (settings.selectedVoiceName != null && settings.selectedVoiceLocale != null) {
+      await flutterTts.setVoice({
+        "name": settings.selectedVoiceName,
+        "locale": settings.selectedVoiceLocale,
+      });
+    }
+
+    await flutterTts.setPitch(settings.voicePitch);
+    await flutterTts.setSpeechRate(settings.speechRate);
+
     await flutterTts.speak(widget.contentItem.fullText);
   }
 
@@ -100,8 +110,8 @@ class _ContentReaderScreenState extends State<ContentReaderScreen> {
         backgroundColor: theme.colorScheme.surface,
         iconTheme: IconThemeData(color: theme.colorScheme.primary),
         actions: [
-          IconButton(onPressed: _speak, icon: Icon(Icons.volume_up)),
-          IconButton(onPressed: _stop, icon: Icon(Icons.stop)),
+          IconButton(onPressed: _speak, icon: const Icon(Icons.volume_up)),
+          IconButton(onPressed: _stop, icon: const Icon(Icons.stop)),
         ],
       ),
       body: Padding(
